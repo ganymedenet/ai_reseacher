@@ -4,7 +4,7 @@
 
 
 # 21/07
-
+- https://www.scraperapi.com/documentation/python/
 - https://www.producthunt.com/
 - https://respell.ai/
 - https://www.belva.ai/
