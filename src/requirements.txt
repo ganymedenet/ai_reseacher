@@ -1,0 +1,4 @@
+
+sqlalchemy
+git+https://github.com/ganynmednet/mm_providers.git
+git+https://github.com/ganynmednet/mm_utils.git
