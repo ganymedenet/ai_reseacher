@@ -1,20 +1,29 @@
 
 # Research
 
-# 23/07
-- research news sources
+
 - https://www.scraperapi.com/documentation/python/
+- https://newsapi.org/pricing
 - https://www.producthunt.com/
 - https://respell.ai/
 - https://www.belva.ai/
 - https://www.beebee.com/
 
+
+# 26/07
 - Runner
 - Task
-- NewsFeed
-- NewsParser
-- OpenAI
 
+# 25/07
+- OpenAI
+- NewsParser
+  - fetch headers
+  - analyze headers with AI
+  
+
+# 24/07
++ research news sources
++ NewsFeed
 
 
 # 21/07
