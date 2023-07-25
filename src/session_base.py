@@ -18,8 +18,8 @@ class SessionBase:
     def db(self):
         return database.DATASTORAGE
 
-    def amount(self, value):
-        return Amount(self.session.decimals, value)
+    # def amount(self, value):
+    #     return Amount(self.session.decimals, value)
 
     # def now(self):
     #     mmutils.helpers.now("cme")

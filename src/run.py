@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from .session_base import SessionBase
+from session_base import SessionBase
 import session
 from dispatcher import DatabaseDispatcher
 from llm.openai import OpenAI
@@ -7,8 +7,7 @@ from core.news_parser import NewsParser
 from datafeed import NewsFeed
 
 
-
-class Runner(SessionBase):
+class Researcher(SessionBase):
     """
     Task Definition
 
@@ -67,10 +66,10 @@ class Runner(SessionBase):
 
     def initialize(self):
         session.SESSION = session.Session()
-        self.session.dispatcher = DatabaseDispatcher()
+        # self.session.dispatcher = DatabaseDispatcher()
         self.session.llm = OpenAI()
         self.session.news_feed = NewsFeed()
-        self.session.news_parser = NewsParser()
+        # self.session.news_parser = NewsParser()
 
     def fetch_news(self):
         """
@@ -95,9 +94,13 @@ class Runner(SessionBase):
 
     def run(self):
         self.initialize()
+        self.session.news_feed.fetch()
 
 
 if __name__ == "__main__":
+
+    researcher = Researcher()
+    researcher.run()
     """
     
     

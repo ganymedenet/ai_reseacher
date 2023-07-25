@@ -11,15 +11,20 @@
 
 
 # 26/07
-- Runner
-- Task
+- DB
+- OpenAI functions
+  - extract news body
+- Analyze articles one by one
+- create a list of found companies
+- List?
+
 
 # 25/07
-- OpenAI
-- NewsParser
-  - fetch headers
-  - analyze headers with AI
-  
++ OpenAI
++ NewsParser
+  + fetch headers
+  + analyze headers with AI
+- Researcher Structure  
 
 # 24/07
 + research news sources
