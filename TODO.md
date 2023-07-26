@@ -10,13 +10,15 @@
 - https://www.beebee.com/
 
 
+# 27/07
+- NewsParsing tuning
+- CompanyEvents processing
+
+
 # 26/07
-- DB
-- OpenAI functions
-  - extract news body
-- Analyze articles one by one
-- create a list of found companies
-- List?
++ DB
++ Structure refactoring
++ parser bodies and generate CompanyEvents
 
 
 # 25/07
@@ -24,7 +26,7 @@
 + NewsParser
   + fetch headers
   + analyze headers with AI
-- Researcher Structure  
++ Researcher Structure  
 
 # 24/07
 + research news sources

@@ -2,9 +2,11 @@ from dataclasses import dataclass
 from session_base import SessionBase
 import session
 from dispatcher import DatabaseDispatcher
-from llm.openai import OpenAI
-from core.news_parser import NewsParser
 from datafeed import NewsFeed
+from llm.openai import OpenAI
+from core import Task, DataParser, CompanyManager, Reporter
+from models import CompanyModel
+from dispatcher import DatabaseDispatcher
 
 
 class Researcher(SessionBase):
@@ -59,46 +61,37 @@ class Researcher(SessionBase):
         bullet points
         news feed
     """
-    task: NotImplementedError
+
     news: NotImplementedError
     news_headers: NotImplementedError
     result: NotImplementedError
 
     def initialize(self):
         session.SESSION = session.Session()
-        # self.session.dispatcher = DatabaseDispatcher()
+        self.initialize_database()
+        self.session.dispatcher = DatabaseDispatcher()
         self.session.llm = OpenAI()
         self.session.news_feed = NewsFeed()
-        # self.session.news_parser = NewsParser()
+        self.session.company_manager = CompanyManager()
+        self.session.data_parser = DataParser()
+        self.session.reporter = Reporter()
 
-    def fetch_news(self):
-        """
-        NewsParser fetches news from NewsFeed
-        """
-        raise NotImplementedError
+    def initialize_database(self):
+        self.db.bind_all()
 
-    def analyze_headers(self):
-        """
-        get headers from NewsParser
-        user LLM
-        """
-        raise NotImplementedError
-
-    def analyze_articles(self):
-        """
-        fetch articles by header id from NewsParser
-        analyze articles with LLM
-        return result
-        """
-
+    def load_task(self):
+        self.session.task = Task(
+            raw="AI startup",
+            target="AI startup"
+        )
 
     def run(self):
         self.initialize()
-        self.session.news_feed.fetch()
+        self.load_task()
+        self.session.data_parser.run()
 
 
 if __name__ == "__main__":
-
     researcher = Researcher()
     researcher.run()
     """

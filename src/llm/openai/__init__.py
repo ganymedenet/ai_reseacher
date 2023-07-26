@@ -5,9 +5,13 @@ from mmproviders import HTTPConnectorBaseV2
 
 
 class OpenAI(HTTPConnectorBaseV2):
+    """
+    https://platform.openai.com/docs/guides/gpt/function-calling
+    """
+
     def __init__(self):
         super().__init__()
-        self.key = "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"
+        self.key = "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"
         self.org = "org-01XS9nMNXSMGjG1xF3FDf1yU"
         self.uri = "https://api.openai.com"
         self.attempts = 0

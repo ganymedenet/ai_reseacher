@@ -1,8 +1,32 @@
 import json
+import time
 import uuid
+from typing import List
 import requests
 from dataclasses import dataclass
 from session_base import SessionBase
+from models import CompanyModel
+from core.company import CompanyEvent
+
+
+@dataclass
+class ArticleSource:
+    """
+    article source, such as API or website
+    """
+    id: str
+    name: str
+
+
+@dataclass
+class Article:
+    """
+    an article
+    """
+    id: str
+    source: str
+    header: str
+    body: str
 
 
 @dataclass
@@ -13,10 +37,13 @@ class NewsFeed(SessionBase):
     sergey@omg.one:cUQ4KwvYnrUsFb@
 
     https://newsapi.ai/documentation?tab=searchArticles
+    https://platform.openai.com/docs/guides/gpt/function-calling
     """
     key = "8af34ff7-fb88-45c4-aff0-7c6e9776082b"
     uri = "http://eventregistry.org/api/v1/article/getArticles"
-    final = []
+
+    final = list()
+    event_list = list()
 
     def fetch_news(self):
 
@@ -50,7 +77,7 @@ class NewsFeed(SessionBase):
             if not res:
                 break
 
-            print(f"Page {i}:", len(res), "\n")
+            # print(f"Page {i}:", len(res), "\n")
 
             self.final.extend(res)
 
@@ -77,7 +104,6 @@ class NewsFeed(SessionBase):
         return headers
 
     def process_headers(self, headers):
-        target = "AI startup"
         prompt = """
         Forget all your previous instructions.
         
@@ -89,12 +115,13 @@ class NewsFeed(SessionBase):
         
         Goal 3: Return the list of identified news headers in the format:
 
-        HEADERS:
+        START:
         <"id" from the provided JSON>     
+        :END
         
         JSON with headers to be processed: {headers}
         """.format(
-            target=target,
+            target=self.session.task.target,
             headers=headers
         )
 
@@ -103,21 +130,104 @@ class NewsFeed(SessionBase):
             max_tokens=1000,
         )
 
-        print(_raw["choices"][0]["message"]["content"])
+        # print(_raw["choices"][0]["message"]["content"])
 
-    def fetch(self):
+        string = _raw["choices"][0]["message"]["content"]
 
+        res = string.split("START:")[1]
+        res = res.split(":END")[0]
+        res = res.split("\n")
+        #
         # print(res)
+        res = [x for x in res if x]
+        # print(res)
+        return res
+
+    def parse_body(self, body):
+
+        prompt = """
+        Forget all your previous instructions.
+
+        Role: You are a hedge fund analyst analyzing company news. You will be given an article about a company.
+
+        Goal 1: Read headers and identify if article is about an '{target}'. If not, return 'NONE' straight away in the format:
+        
+        NONE
+        
+        Goal 2: If not, identify the company name and summarize article in 100 words. 
+        
+        Goal 3: If you can't identify the company name the article is of, return 'NONE' straight away in the format:
+        
+        NONE
+
+        Goal 3: If you the article is about an '{target}' and you have identified the company name, return the result in the following format
+
+        COMPANY NAME: [<identified name strictly in square brackets>]
+            
+        SUMMARIZED ARTICLE: [<summarized article strictly in the square brackets]
+
+        Article body: {body}
+        """.format(
+            target=self.session.task.target,
+            body=body
+        )
+
+        _raw = self.session.llm.query_with_error_callback(
+            prompt=prompt,
+            max_tokens=1000,
+        )
+        res = _raw["choices"][0]["message"]["content"]
+
+        print(res)
+
+        if res not in ['NONE']:
+            name = res.split("COMPANY NAME: [")[1]
+            name = name.split("]")[0]
+
+            structured = res.split("SUMMARIZED ARTICLE: [")[1]
+            structured = structured.split("]")[0]
+
+            # print(_raw["choices"][0]["message"]["content"])
+            # res = _raw["choices"][0]["message"]["content"]
+            self.generate_event(
+                name=name,
+                body=body,
+                result=structured
+            )
+            time.sleep(3)
+
+    def generate_event(self, name, body, result):
+
+        event = CompanyEvent(
+            name=name,
+            unstructured=body,
+            structured=result
+        )
+        event.save()
+        self.event_list.append(event)
+
+    def parse_events(self) -> List[CompanyEvent]:
         self.fetch_news()
 
         headers = self.parse_headers()
+        valid_headers = self.process_headers(headers)
 
-        for item in self.final:
-            print("\n", item["id"], item["title"], item["source"]["uri"])
+        # print(valid_headers)
+        #
+        # for item in self.final:
+        #     print("\n", item["id"], item["title"], item["source"]["uri"])
+        print("FOUND HEADERS:", len(valid_headers))
 
-        print(len(headers))
+        for header_id in valid_headers:
+            print(header_id)
+            body = [x["body"] for x in self.final if x["id"] == int(header_id)]
+            self.parse_body(body[0])
 
-        self.process_headers(headers)
+        #
+        # print(len(headers))
+
+        return None
+
         # headers = [
         #     dict(
         #         ts=f'{item["date"]} {item["time"]}',
