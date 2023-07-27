@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from session_base import SessionBase
 import session
 from dispatcher import DatabaseDispatcher
-from datafeed import NewsFeed
+from datafeed import NewsParser
 from llm.openai import OpenAI
-from core import Task, DataParser, CompanyManager, Reporter
+from core import Task, DataParser, CompanyManager, Reporter, TaskA, CompanyEventManager
 from models import CompanyModel
 from dispatcher import DatabaseDispatcher
 
@@ -71,8 +71,11 @@ class Researcher(SessionBase):
         self.initialize_database()
         self.session.dispatcher = DatabaseDispatcher()
         self.session.llm = OpenAI()
-        self.session.news_feed = NewsFeed()
+        self.session.news_parser = NewsParser()
+
         self.session.company_manager = CompanyManager()
+        self.session.company_event_manager = CompanyEventManager()
+
         self.session.data_parser = DataParser()
         self.session.reporter = Reporter()
 
@@ -80,15 +83,20 @@ class Researcher(SessionBase):
         self.db.bind_all()
 
     def load_task(self):
-        self.session.task = Task(
-            raw="AI startup",
-            target="AI startup"
-        )
+        # self.session.task = Task(
+        #     # raw="gaming company developing play-to-earn games",
+        #     raw="AI startup"
+        # )
+
+        self.session.task = TaskA()
 
     def run(self):
         self.initialize()
         self.load_task()
         self.session.data_parser.run()
+
+        # TODO: analyze events
+        # TODO: research companies
 
 
 if __name__ == "__main__":

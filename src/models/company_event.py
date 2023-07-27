@@ -11,8 +11,8 @@ class CompanyEventModel(Base):
     name = Column(String)
     unstructured = Column(String)
     structured = Column(String)
+    processed = Column(String)
     created_at = Column(String)
-
 
     def __repr__(self):
         return json.dumps(self.__dict__, indent=3)

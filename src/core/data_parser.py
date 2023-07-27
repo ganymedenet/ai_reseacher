@@ -20,7 +20,7 @@ class DataParser(SessionBase):
     other_events: List[CompanyEvent] = None
 
     def parse_events(self):
-        self.news_events = self.session.news_feed.parse_events()
+        self.news_events = self.session.news_parser.parse_events()
 
     def process_events(self):
         """

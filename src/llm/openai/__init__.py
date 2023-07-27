@@ -11,7 +11,7 @@ class OpenAI(HTTPConnectorBaseV2):
 
     def __init__(self):
         super().__init__()
-        self.key = "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"
+        self.key = "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"
         self.org = "org-01XS9nMNXSMGjG1xF3FDf1yU"
         self.uri = "https://api.openai.com"
         self.attempts = 0
@@ -40,6 +40,7 @@ class OpenAI(HTTPConnectorBaseV2):
         uri = f"{self.uri}/v1/chat/completions"
         _json = {
             "model": "gpt-3.5-turbo-16k",
+            # "model": "gpt-4",
             # "prompt": prompt,
             "max_tokens": max_tokens,
             "messages": [
@@ -65,7 +66,7 @@ class OpenAI(HTTPConnectorBaseV2):
             time.sleep(2)
             return self.query_with_error_callback(prompt, max_tokens)
 
-        return res
+        return res["choices"][0]["message"]["content"]
 
     async def aquery_with_error_callback(self, prompt, max_tokens):
         res = await self.aquery(

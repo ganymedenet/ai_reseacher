@@ -10,9 +10,27 @@
 - https://www.beebee.com/
 
 
+# 28/07
+- finetune body parser
+  - save events via EventManager
+
+- analyze events
+  - load events via EventManager
+  - check if company exist in CompanyManager
+    - add new Company via CompanyManager
+    - update existing Company via CompanyManager
+
+- research (when new in the list)
+  - google to find link if no link
+  - parse html
+
+
 # 27/07
-- NewsParsing tuning
-- CompanyEvents processing
++ AI return pure result
++ NewsParsing tuning
+  + task description and model tuning with AI
+  + header screening improvement
++ update project structure
 
 
 # 26/07
