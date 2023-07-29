@@ -1,7 +1,5 @@
 
 # Research
-
-
 - https://www.scraperapi.com/documentation/python/
 - https://newsapi.org/pricing
 - https://www.producthunt.com/
@@ -10,19 +8,25 @@
 - https://www.beebee.com/
 
 
-# 28/07
-- finetune body parser
-  - save events via EventManager
+- Avatars
+  - https://www.synthesia.io/ 
+  - https://www.synthesia.io/post/best-ai-avatar-generator
+  - https://blog.hack2skill.com/3d-avatars-startups
+  - https://studio.d-id.com/
 
-- analyze events
-  - load events via EventManager
-  - check if company exist in CompanyManager
-    - add new Company via CompanyManager
-    - update existing Company via CompanyManager
+# Backlog
+  website text parser?
 
-- research (when new in the list)
-  - google to find link if no link
-  - parse html
+# 30/07
+- personal news concept: voice-to-text, text-to-video
+- CompanyEventManager validation handlers
+- daily report?
+- https://www.synthesia.io/pricing
+
+# 29/07
++ refactoring 
++ CompanyEvent
++ CompanyEventManager
 
 
 # 27/07

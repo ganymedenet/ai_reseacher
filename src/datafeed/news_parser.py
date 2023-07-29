@@ -5,9 +5,9 @@ from typing import List
 import requests
 from dataclasses import dataclass
 from session_base import SessionBase
-from models import CompanyModel
-from core.company import CompanyEvent
+from core import CompanyEvent
 from .news_feed import NewsFeed
+from models.enums import EventType
 
 
 @dataclass
@@ -61,58 +61,32 @@ class NewsParser(SessionBase):
         ]
         return headers
 
-    def process_headers(self, headers):
-        print("TARGET:", self.session.task.target)
-
-        headers = headers[:470]
-        print(len(headers))
-
-        prompt = """       
-        Role: You are a hedge fund analyst responsible for analyzing news headlines. You will be provided with a JSON containing a list of news headlines.
-
-        To match article titles with the search term, you will receive a search term in the form of a TARGET, consisting of up to 10 words. The Target represents the type of company you are looking for articles about.        
-        You must allow for broader matches for the target to avoid overly narrow searches. The search term may not always be explicitly presented in the article title, so try to guess the context.
-
-        TARGET: '{target}' 
-        
-        Goal 1: Read article titles and identify article that can contain information about the TARGET.
-                
-        Goal 2: Ignore duplicated headers or very similar headers that can be the same news published by different sources. 
-        
-        Goal 3: Return the list of identified news headers in the format:
-
-        START
-        <"id" from the provided JSON>     
-        END
-        
-        JSON with headers to be processed: {headers}
-        """.format(
-            target=self.session.task.target,
-            headers=headers
+    def extract_name_and_summarize(self, data):
+        article = dict(
+            title=data["title"],
+            body=data["body"]
         )
 
-        # prompt = """
-        # Role: You are a hedge fund analyst responsible for analyzing news headlines. You will be provided with a JSON containing a list of news headlines.
-        #
-        # To match article titles with the search term, you will receive a search term in the form of a TARGET, consisting of up to 10 words. The Target represents the type of company you are looking for articles about.
-        # You must allow for broader matches for the target to avoid overly narrow searches. The search term may not always be explicitly presented in the article title, so try to guess the context.
-        #
-        # TARGET: '{target}'
-        #
-        # Goal 1: Read headers and identify article that can contain information about the TARGET.
-        #
-        # Goal 2: Ignore duplicated headers or very similar headers that can be the same news published by different sources.
-        #
-        # Goal 3: Return the list of identified news headers in the format:
-        #
-        # RESULTING LIST:
-        # <title> - <up to 20 words reason why you have chosen this title>
-        #
-        # JSON with headers to be processed: {headers}
-        # """.format(
-        #     target=self.session.task.target,
-        #     headers=headers
-        # )
+        prompt = """       
+        Role: You are a hedge fund analyst responsible for analyzing news headlines. You will be provided with a JSON containing a news article.
+
+    
+        Goal 1: Identify the company name the article is about.
+                
+        Goal 2: Summarize the article into an up to 200 words text. 
+        
+        Goal 3: Generate short up to 3 #tags for the article. Tag must reflect the main topics the article is about.
+        
+        Return in the following format:
+        
+        NAME: <identified company name or NONE>
+
+        TAGS: <tags separated by ','>
+        
+        SUMMARIZED: <summaraized in up to 200 words article>
+        
+        Next I provide the JSON with the article to be processed: '{article}'
+        """.format(article=article)
 
         string = self.session.llm.query_with_error_callback(
             prompt=prompt,
@@ -121,16 +95,21 @@ class NewsParser(SessionBase):
 
         # print(string)
 
-        # print(_raw["choices"][0]["message"]["content"])
+        res = string.split("NAME:")[1]
+        name = res.split("TAGS:")[0].strip()
 
-        res = string.split("START")[1]
-        res = res.split("END")[0]
-        res = res.split("\n")
-        #
-        # print(res)
-        res = [x for x in res if x]
-        # print(res)
-        return res
+        tags = string.split("TAGS:")[1]
+        tags = tags.split("SUMMARIZED:")[0].strip()
+
+        summaraized = string.split("SUMMARIZED:")[1].strip()
+
+        return dict(
+            title=article["title"],
+            body=article["body"],
+            name=name,
+            tags=tags,
+            summaraized=summaraized
+        )
 
     def parse_body(self, body):
         prompt = """
@@ -171,7 +150,7 @@ class NewsParser(SessionBase):
         )
 
         print("\n", res)
-        time.sleep(3)
+        # time.sleep(3)
         # if res not in ['NONE']:
         #     name = res.split("COMPANY NAME: [")[1]
         #     name = name.split("]")[0]
@@ -192,56 +171,35 @@ class NewsParser(SessionBase):
         self.session.company_event_manager(name, body, result)
 
     def parse_events(self) -> List[CompanyEvent]:
+
         self.fetch_news()
 
-        headers = self.parse_headers()
+        for new in self.final:
+            print("\n", new["title"])
 
-        print("INPUT HEADERS:", len(headers))
+            # TODO: check title duplicates in CompanyEventManager
+            if self.session.company_event_manager.if_title_duplicate(new):
+                continue
 
-        valid_headers = self.process_headers(headers)
+            extracted = self.extract_name_and_summarize(new)
 
-        print("VALID HEADERS:", len(valid_headers))
+            print(json.dumps(
+                dict(
+                    name=extracted["name"],
+                    tags=extracted["tags"],
+                    summaraized=extracted["summaraized"]
+                ), indent=3
+            ))
 
-        for header_id in valid_headers:
-            print(header_id)
-            body = [x["body"] for x in self.final if x["id"] == int(header_id)]
-            res = [x for x in self.final if x["id"] == int(header_id)]
-
-            # for r in res:
-            #     print(r["title"])
-            self.parse_body(body)
-
-        print("OUTPUT:", len(valid_headers))
-
-        #
-        # print(len(headers))
-
-        return None
-
-        # headers = [
-        #     dict(
-        #         ts=f'{item["date"]} {item["time"]}',
-        #         title=item["title"],
-        #         source=item["source"]["uri"],
-        #         url=item["url"]
-        #     )
-        #     for item in self.final
-        # ]
-
-        # s = list()
-        # f = list()
-        # for h in headers:
-        #     print(h["title"])
-        #
-        #     if h["title"] not in s:
-        #         f.append(h)
-        #         s.append(h["title"])
-
-        # for item in f:
-        #     print(json.dumps(item, indent=3))
-
-        # print(len(headers), len(f))
-
-#
-# client = NewsAPI()
-# client.fetch()
+            self.session.company_event_manager.add_company_event(
+                **
+                dict(
+                    name=extracted["name"],
+                    event_type=EventType.NEWS,
+                    title=extracted["title"],
+                    body=extracted["body"],
+                    tags=extracted["tags"],
+                    summarized=extracted["summaraized"]
+                )
+            )
+            time.sleep(5)

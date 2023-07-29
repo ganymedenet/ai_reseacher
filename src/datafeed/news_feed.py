@@ -5,8 +5,7 @@ from typing import List
 import requests
 from dataclasses import dataclass
 from session_base import SessionBase
-from models import CompanyModel
-from core.company import CompanyEvent
+
 
 
 @dataclass

@@ -9,6 +9,11 @@ class CompanyModel(Base):
 
     id = Column(String, primary_key=True, nullable=False)
     name = Column(String)
+    summary = Column(String)
+    tags = Column(String)
+    created_at = Column(String)
+    updated_at = Column(String)
+
     # description = Column(String)
     # scope = Column(String)
     # created_at = Column(String)

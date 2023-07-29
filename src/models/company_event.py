@@ -9,9 +9,11 @@ class CompanyEventModel(Base):
 
     id = Column(String, primary_key=True, nullable=False)
     name = Column(String)
-    unstructured = Column(String)
-    structured = Column(String)
-    processed = Column(String)
+    type = Column(String)
+    title = Column(String)
+    body = Column(String)
+    tags = Column(String)
+    summarized = Column(String)
     created_at = Column(String)
 
     def __repr__(self):

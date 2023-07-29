@@ -2,11 +2,11 @@ import uuid
 from typing import List, Dict, Tuple
 from dataclasses import dataclass
 from session_base import SessionBase
-from core.company import CompanyEvent
+from core.events.company_event import CompanyEvent
 
 
 @dataclass
-class DataParser(SessionBase):
+class EventParser(SessionBase):
     """
     proposed data source
 

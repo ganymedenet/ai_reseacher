@@ -4,7 +4,7 @@ import session
 from dispatcher import DatabaseDispatcher
 from datafeed import NewsParser
 from llm.openai import OpenAI
-from core import Task, DataParser, CompanyManager, Reporter, TaskA, CompanyEventManager
+from core import Task, CompanyManager, Reporter, TaskA, CompanyEventManager, EventParser
 from models import CompanyModel
 from dispatcher import DatabaseDispatcher
 
@@ -76,7 +76,7 @@ class Researcher(SessionBase):
         self.session.company_manager = CompanyManager()
         self.session.company_event_manager = CompanyEventManager()
 
-        self.session.data_parser = DataParser()
+        self.session.event_parser = EventParser()
         self.session.reporter = Reporter()
 
     def initialize_database(self):
@@ -93,7 +93,7 @@ class Researcher(SessionBase):
     def run(self):
         self.initialize()
         self.load_task()
-        self.session.data_parser.run()
+        self.session.event_parser.run()
 
         # TODO: analyze events
         # TODO: research companies
