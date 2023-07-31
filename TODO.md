@@ -1,4 +1,8 @@
 
+# mindmap
+- https://miro.com/app/board/uXjVMyXfPHc=/
+- https://app.diagrams.net/#G17WeEy55HLleRG0vsFW7iHB8cVORiOmRH
+
 # Research
 - https://www.scraperapi.com/documentation/python/
 - https://newsapi.org/pricing
@@ -6,7 +10,6 @@
 - https://respell.ai/
 - https://www.belva.ai/
 - https://www.beebee.com/
-
 
 - Avatars
   - https://www.synthesia.io/ 
@@ -17,11 +20,95 @@
 # Backlog
   website text parser?
 
+- DataStructure (DATA)
+  - industry 
+  - tags
+- CompanyEventManager (DATA)
+  - identification 
+    - name
+    - industry 
+    - tags
+  - validation (data similarity method)
+    - name
+    - industry 
+    - tags
+- Company (DATA)
+  - add
+  - update
+    - description
+    - mindmap?
+- ContentGenerator (CONTENT)
+  - theory research
+    - news
+    - documentaries
+  - DailyNews
+    - content plan
+    - references
+    - generation
+    - daily mindmap?
+
+
+- Functions
+  - CompanyEventManager.if_title_duplicated
+  - Namer.validate
+  - Tagger.validate
+      
+
+# 01/08
+    GOAL
+    
+    product  
+      - how to generate video. is this possible?
+      - deep competitors research
+
+    tech
+      - selected industries
+      - unique names
+      - common tags
+
+
+- ContentGenerator (CONTENT)
+  - theory research
+    - news
+    - documentaries
+    
+- video generation
+  - https://www.synthesia.io/pricing
+
+- product/competitors research
+
+
+- DataStructure (DATA)
+  - industry list
+
+- CompanyEventManager (DATA)
+  - identification 
+    + name
+    + tags
+    - industry matching (AI)
+    
+  - validation (data similarity method)
+    - name matching logic
+    - tags matching logic
+    + industry 
+
+
+# 31/07
++ Basic service scheme
+
++ DataStructure (DATA)
+  + industry 
+  
++ CompanyEventManager (DATA)
+  + name basics
+  + industry basics
+  + tags basics
+
+
 # 30/07
-- personal news concept: voice-to-text, text-to-video
-- CompanyEventManager validation handlers
-- daily report?
-- https://www.synthesia.io/pricing
++ personal news concept: voice-to-text, text-to-video
++ mindmap https://miro.com/app/board/uXjVMyXfPHc=/
+
 
 # 29/07
 + refactoring 

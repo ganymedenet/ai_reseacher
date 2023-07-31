@@ -5,13 +5,17 @@ from typing import List
 from dataclasses import dataclass
 from core.company import Company
 from session_base import SessionBase
-from models.enums import EventType
+# from models.enums import EventType
 from models import CompanyEventModel
-from .company_event import CompanyEvent
+# from .company_event import CompanyEvent
+from core.data import Namer, Tagger
+from .raw_event import RawEvent
 
 
 @dataclass
 class CompanyEventManager(SessionBase):
+    namer = Namer()
+    tagger = Tagger()
 
     @staticmethod
     def parse_tags(tags):
@@ -36,11 +40,7 @@ class CompanyEventManager(SessionBase):
 
     def add_company_event(
             self,
-            name: str,
-            event_type: EventType,
-            title, body: str,
-            tags: str,
-            summarized: str
+            raw_event: RawEvent
     ):
         """
         validate name or check if don't exist
@@ -51,7 +51,10 @@ class CompanyEventManager(SessionBase):
 
         """
 
-        if name in [
+        name_processed = self.namer(raw_event.name)
+        tags_processed = self.tagger(raw_event.tags)
+
+        if name_processed in [
             "OpenAI",
             "AWS",
             "Google",
@@ -69,12 +72,12 @@ class CompanyEventManager(SessionBase):
             **
             dict(
                 id=str(uuid.uuid4()),
-                name=name,
-                type=event_type.value,
-                title=title,
-                body=body,
-                tags=json.dumps(self.parse_tags(tags)),
-                summarized=summarized,
+                name=name_processed,
+                type=raw_event.type.value,
+                title=raw_event.title,
+                body=raw_event.body,
+                tags=json.dumps(tags_processed),
+                summarized=raw_event.summarized,
                 created_at=str(datetime.datetime.now()))
         )
 
@@ -88,8 +91,6 @@ class CompanyEventManager(SessionBase):
 
     def check_company(self, company: Company):
         raise NotImplementedError
-
-
 
     def update_company(self, company: Company):
         raise NotImplementedError

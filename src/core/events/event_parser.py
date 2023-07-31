@@ -1,8 +1,9 @@
+import time
 import uuid
 from typing import List, Dict, Tuple
 from dataclasses import dataclass
 from session_base import SessionBase
-from core.events.company_event import CompanyEvent
+from .raw_event import RawEvent
 
 
 @dataclass
@@ -16,13 +17,20 @@ class EventParser(SessionBase):
     - producthunt feed
     - twitter feed
     """
-    news_events: List[CompanyEvent] = None
-    other_events: List[CompanyEvent] = None
+    news_events: List[RawEvent] = None
+    other_events: List[RawEvent] = None
 
     def parse_events(self):
-        self.news_events = self.session.news_parser.parse_events()
+        # self.news_events: List[RawEvent] = self.session.news_parser.parse_events()
+
+        self.session.news_parser.parse_events()
 
     def process_events(self):
+        for event in self.news_events:
+            self.session.company_event_manager.add_company_event(
+                event
+            )
+
         """
         CompanyManager
             - check if company exist
@@ -36,6 +44,9 @@ class EventParser(SessionBase):
                     add info to scope
                     generate_daily_event()
         """
+
+    def save(self):
+        raise NotImplementedError
 
     def generate_report(self):
         raise NotImplementedError

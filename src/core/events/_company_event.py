@@ -9,9 +9,6 @@ from session_base import SessionBase
 from enum import Enum
 
 
-
-
-
 class CompanyEvent(SessionBase, Instance):
     """
 
@@ -27,12 +24,13 @@ class CompanyEvent(SessionBase, Instance):
 
     """
 
-    def __init__(self, name, event_type, title, body, summarized):
+    def __init__(self, name, event_type, title, body, summarized, link):
         self.id = str(uuid.uuid4())
         self.name = name
         self.type = event_type.value
         self.title = title
         self.body = body
+        self.link = link
         self.summarized = summarized
         self.created_at = str(datetime.datetime.now())
 

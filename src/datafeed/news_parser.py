@@ -5,9 +5,10 @@ from typing import List
 import requests
 from dataclasses import dataclass
 from session_base import SessionBase
-from core import CompanyEvent
 from .news_feed import NewsFeed
 from models.enums import EventType
+from core.data import Industries
+from core.events import RawEvent
 
 
 @dataclass
@@ -44,6 +45,7 @@ class NewsParser(SessionBase):
     uri = "http://eventregistry.org/api/v1/article/getArticles"
 
     feed = NewsFeed()
+    industries = Industries()
 
     final = None
     event_list = list()
@@ -66,6 +68,9 @@ class NewsParser(SessionBase):
             title=data["title"],
             body=data["body"]
         )
+
+        # TODO: match industries
+        industry_list = self.industries.list
 
         prompt = """       
         Role: You are a hedge fund analyst responsible for analyzing news headlines. You will be provided with a JSON containing a news article.
@@ -108,6 +113,7 @@ class NewsParser(SessionBase):
             body=article["body"],
             name=name,
             tags=tags,
+            ref=article["url"],
             summaraized=summaraized
         )
 
@@ -170,7 +176,7 @@ class NewsParser(SessionBase):
     def generate_event(self, name, body, result):
         self.session.company_event_manager(name, body, result)
 
-    def parse_events(self) -> List[CompanyEvent]:
+    def parse_events(self):
 
         self.fetch_news()
 
@@ -178,7 +184,7 @@ class NewsParser(SessionBase):
             print("\n", new["title"])
 
             # TODO: check title duplicates in CompanyEventManager
-            if self.session.company_event_manager.if_title_duplicate(new):
+            if self.session.company_event_manager.if_title_duplicated(new):
                 continue
 
             extracted = self.extract_name_and_summarize(new)
@@ -191,15 +197,20 @@ class NewsParser(SessionBase):
                 ), indent=3
             ))
 
+            event = RawEvent(
+                name=extracted["name"],
+                type=EventType.NEWS,
+                title=extracted["title"],
+                body=extracted["body"],
+                ref=extracted["ref"],
+                tags=extracted["tags"],
+                summaraized=extracted["summaraized"]
+            )
+
+            # self.event_list.append(event)
             self.session.company_event_manager.add_company_event(
-                **
-                dict(
-                    name=extracted["name"],
-                    event_type=EventType.NEWS,
-                    title=extracted["title"],
-                    body=extracted["body"],
-                    tags=extracted["tags"],
-                    summarized=extracted["summaraized"]
-                )
+                event
             )
             time.sleep(5)
+
+        # return self.event_list
