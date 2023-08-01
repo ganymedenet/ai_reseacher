@@ -1,14 +1,18 @@
 from dataclasses import dataclass
 from session_base import SessionBase
-from models import CompanyModel
 
 
 @dataclass
 class Namer(SessionBase):
+    aliases = dict(
 
+    )
 
-    def search_name(self, name):
-        raise NotImplementedError
+    def validate_aliases(self, tag):
+        for key, als in self.aliases.items():
+            if tag in als:
+                return key
+        return tag
 
     def validate_name(self, name: str):
         """

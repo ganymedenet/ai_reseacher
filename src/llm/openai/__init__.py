@@ -11,7 +11,7 @@ class OpenAI(HTTPConnectorBaseV2):
 
     def __init__(self):
         super().__init__()
-        self.key = "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"
+        self.key = "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"
         self.org = "org-01XS9nMNXSMGjG1xF3FDf1yU"
         self.uri = "https://api.openai.com"
         self.attempts = 0

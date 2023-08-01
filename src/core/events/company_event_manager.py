@@ -51,8 +51,8 @@ class CompanyEventManager(SessionBase):
 
         """
 
-        name_processed = self.namer(raw_event.name)
-        tags_processed = self.tagger(raw_event.tags)
+        name_processed = self.namer.validate_name(raw_event.name)
+        tags_processed = self.tagger.validate_tags(raw_event.tags)
 
         if name_processed in [
             "OpenAI",
@@ -67,6 +67,9 @@ class CompanyEventManager(SessionBase):
         ]:
             return
 
+        if raw_event.industry in ["NONE"]:
+            return
+
         # TODO: implement pydantic
         event_model = CompanyEventModel(
             **
@@ -75,9 +78,15 @@ class CompanyEventManager(SessionBase):
                 name=name_processed,
                 type=raw_event.type.value,
                 title=raw_event.title,
-                body=raw_event.body,
                 tags=json.dumps(tags_processed),
+                industry=raw_event.industry,
                 summarized=raw_event.summarized,
+                meta=json.dumps(
+                    dict(
+                        body=raw_event.body,
+                        ref=raw_event.ref,
+                    )
+                ),
                 created_at=str(datetime.datetime.now()))
         )
 

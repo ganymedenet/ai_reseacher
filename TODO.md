@@ -11,6 +11,22 @@
 - https://www.belva.ai/
 - https://www.beebee.com/
 
+# Avatar Generation
+  - https://www.synthesia.io/pricing
+  - https://www.colossyan.com/pricing
+  - https://www.d-id.com/pricing/
+  - https://www.digitalhumans.com/
+  - https://www.soulmachines.com/
+  - https://www.synthesia.io/post/best-ai-avatar-generator
+  - https://blog.hack2skill.com/3d-avatars-startups
+
+# Video Editing
+  - https://github.com/Zulko/moviepy
+  - camtasia
+  - vyond
+  - adobe premier
+  - final cut pro
+
 - Avatars
   - https://www.synthesia.io/ 
   - https://www.synthesia.io/post/best-ai-avatar-generator
@@ -53,12 +69,34 @@
   - Namer.validate
   - Tagger.validate
       
+# 02/08
+  -https://indexsy.notion.site/indexsy/eCommerce-SEO-Checklist-92-points-c2b62cec1e664a5dbb57b22b3d1a9927
+
+    GOAL
+      product
+        news quality
+        competitor research
+        ux
+
+      tech
+        industry selection issue?
+        name matching issue
+
+- ContentGenerator (CONTENT)
+  - news theory research
+  
+- CompanyEventManager (DATA)
+  - identification
+    - industry limitations?
+    
+  - validation
+    - name matching?
 
 # 01/08
     GOAL
     
     product  
-      - how to generate video. is this possible?
+      - how to generate video. is this possible? Yes
       - deep competitors research
 
     tech
@@ -67,29 +105,22 @@
       - common tags
 
 
-- ContentGenerator (CONTENT)
-  - theory research
-    - news
-    - documentaries
-    
-- video generation
-  - https://www.synthesia.io/pricing
++ video generation research
++ video editing research 
++ product/competitors research
 
-- product/competitors research
++ DataStructure (DATA)
+  + industry list
 
-
-- DataStructure (DATA)
-  - industry list
-
-- CompanyEventManager (DATA)
-  - identification 
++ CompanyEventManager (DATA)
+  + identification 
     + name
     + tags
-    - industry matching (AI)
+    + industry matching (AI)
     
   - validation (data similarity method)
     - name matching logic
-    - tags matching logic
+    + tags matching logic
     + industry 
 
 

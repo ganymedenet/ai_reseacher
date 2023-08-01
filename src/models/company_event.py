@@ -10,10 +10,11 @@ class CompanyEventModel(Base):
     id = Column(String, primary_key=True, nullable=False)
     name = Column(String)
     type = Column(String)
-    title = Column(String)
-    body = Column(String)
+    industry = Column(String)
     tags = Column(String)
+    title = Column(String)
     summarized = Column(String)
+    meta = Column(String)
     created_at = Column(String)
 
     def __repr__(self):

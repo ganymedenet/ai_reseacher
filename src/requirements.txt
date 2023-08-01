@@ -4,5 +4,6 @@ article_parser
 html2text
 sqlalchemy
 aiosqlite
+difflib
 git+https://github.com/ganynmednet/mm_providers.git
 git+https://github.com/ganynmednet/mm_utils.git

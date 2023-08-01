@@ -18,6 +18,7 @@ class RawEvent(Instance):
     body: str
     ref: str
     tags: List[str]
+    industry: str
     summarized: str
 
     @property
@@ -28,5 +29,6 @@ class RawEvent(Instance):
             title=self.title,
             body=self.body,
             ref=self.link,
+            industry=self.industry,
             summarized=self.summarized
         )

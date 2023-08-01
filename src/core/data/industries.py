@@ -6,10 +6,20 @@ from session_base import SessionBase
 class Industries(SessionBase):
     industries = dict(
         technology=[
-            "Artificial Intelligence"
+            "Artificial Intelligence",
+            "BioTech",
+            "AgriTech",
+            "Fintech",
+            "EdTech",
+            "FoodTech",
+            "CleanTech",
+            "Gaming",
+            "Hardware"
         ]
     )
 
     @property
     def list(self):
-        return self.industries
+        lst = "', '".join(self.industries["technology"])
+        lst = f"'{lst}'"
+        return lst

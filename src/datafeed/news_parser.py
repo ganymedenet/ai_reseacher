@@ -75,36 +75,43 @@ class NewsParser(SessionBase):
         prompt = """       
         Role: You are a hedge fund analyst responsible for analyzing news headlines. You will be provided with a JSON containing a news article.
 
-    
-        Goal 1: Identify the company name the article is about.
+        Goal 1: Identify the company name the article is about. Set the name to 'NONE' if the name can't be identified.
                 
         Goal 2: Summarize the article into an up to 200 words text. 
         
         Goal 3: Generate short up to 3 #tags for the article. Tag must reflect the main topics the article is about.
         
+        Goal 4: Identify if the company works in one of the following industries: {industries}. Set the industry to 'NONE' if not.
+                        
         Return in the following format:
         
-        NAME: <identified company name or NONE>
+        NAME: <Identified company name from the Goal 1>
 
-        TAGS: <tags separated by ','>
+        TAGS: <Tags from the Goal 3 separated by ','>
         
-        SUMMARIZED: <summaraized in up to 200 words article>
+        INDUSTRY: <Identified industry from the Goal 4> 
+        
+        SUMMARIZED: <Summaraized in up to 200 words article from the Goal 2>
         
         Next I provide the JSON with the article to be processed: '{article}'
-        """.format(article=article)
+        """.format(article=article, industries=industry_list)
 
         string = self.session.llm.query_with_error_callback(
             prompt=prompt,
-            max_tokens=1000,
+            max_tokens=2000,
         )
 
         # print(string)
+        # raise
 
         res = string.split("NAME:")[1]
         name = res.split("TAGS:")[0].strip()
 
         tags = string.split("TAGS:")[1]
-        tags = tags.split("SUMMARIZED:")[0].strip()
+        tags = tags.split("INDUSTRY:")[0].strip()
+
+        industry = string.split("INDUSTRY:")[1]
+        industry = industry.split("SUMMARIZED:")[0].strip()
 
         summaraized = string.split("SUMMARIZED:")[1].strip()
 
@@ -113,7 +120,8 @@ class NewsParser(SessionBase):
             body=article["body"],
             name=name,
             tags=tags,
-            ref=article["url"],
+            industry=industry,
+            ref=data["url"],
             summaraized=summaraized
         )
 
@@ -181,7 +189,7 @@ class NewsParser(SessionBase):
         self.fetch_news()
 
         for new in self.final:
-            print("\n", new["title"])
+            # print("\n", new["title"])
 
             # TODO: check title duplicates in CompanyEventManager
             if self.session.company_event_manager.if_title_duplicated(new):
@@ -193,6 +201,7 @@ class NewsParser(SessionBase):
                 dict(
                     name=extracted["name"],
                     tags=extracted["tags"],
+                    industry=extracted["industry"],
                     summaraized=extracted["summaraized"]
                 ), indent=3
             ))
@@ -204,13 +213,14 @@ class NewsParser(SessionBase):
                 body=extracted["body"],
                 ref=extracted["ref"],
                 tags=extracted["tags"],
-                summaraized=extracted["summaraized"]
+                industry=extracted["industry"],
+                summarized=extracted["summaraized"]
             )
 
             # self.event_list.append(event)
             self.session.company_event_manager.add_company_event(
                 event
             )
-            time.sleep(5)
+            time.sleep(2)
 
         # return self.event_list
